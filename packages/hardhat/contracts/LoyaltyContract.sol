@@ -1,11 +1,10 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity >=0.8.0 <0.9.0;
 
 import "./LoyaltyToken.sol";
 import "./LoyaltyNFT.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 
 /**
     * @title LoyaltyContract
@@ -30,8 +29,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
     // Receive currencies ETH, USDT
     address ERC20Token;
-    address LoyaltyToken;
-    address LoyaltyNFT;
+    LoyaltyToken loyaltyToken;
+    LoyaltyNFT loyaltyNFT;
 
     uint256 public totalRewards = 1;
 
@@ -40,6 +39,17 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
     uint256 private contractTokenBalance;
 
     uint256 public totalPointsRedeemed = 0;
+
+    // Points earned by refferal required to get a reward
+    // If person you referred spends X tokens then you get Y points
+    uint256 public refferalTokensToSpend;
+    uint256 public refferalReward;
+
+    struct Referral {
+        bool isClaimed;
+        address referrer;
+        uint256 amountSpent;
+    }
 
     struct Customer {
         address customerAddress;
@@ -59,42 +69,80 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
     struct Shop {
         bool paymentReward;
         bool referralReward;
+        bool buySomeGetSome;
         address owner;
     }
 
     Shop public shop;
 
     mapping(address => Customer) public customers;
+    mapping(address => Referral) public referrals;
     mapping(uint256 => Reward) public rewards;
 
     constructor(
             bool _paymentReward,
             bool _referralReward,
+            bool _buySomeGetSome,
             address _ERC20Token,
             uint256 _tokenToPointsRatio,
+            uint256 _refferalTokensToSpend,
+            uint256 _refferalReward,
             string memory _tokenName,
             string memory _tokenSymbol
         )
+        Ownable(msg.sender)
     {
+
         tokenToPointsRatio = _tokenToPointsRatio;
+        refferalTokensToSpend = _refferalTokensToSpend;
+        refferalReward = _refferalReward;
         ERC20Token = _ERC20Token;
-        LoyaltyToken = new LoyaltyToken(msg.sender, _tokenName, _tokenSymbol);
-        LoyaltyNFT = new LoyaltyNFT(msg.sender, _tokenName, _tokenSymbol);
-        shop = Shop(_paymentReward, _referralReward, msg.sender);
+        loyaltyToken = new LoyaltyToken(msg.sender, _tokenName, _tokenSymbol);
+        loyaltyNFT = new LoyaltyNFT(msg.sender, _tokenName, _tokenSymbol);
+        shop = Shop(_paymentReward, _referralReward, _buySomeGetSome, msg.sender);
     }
 
-    function setActivatedRewards(bool _paymentReward, bool _referralReward) public onlyOwner {
+    // Set activated rewards
+    function setActivatedRewards(
+            bool _paymentReward,
+            bool _referralReward,
+            bool _buySomeGetSome
+        ) public onlyOwner {
         shop.paymentReward = _paymentReward;
         shop.referralReward = _referralReward;
+        shop.buySomeGetSome = _buySomeGetSome;
     }
 
+    // Set token to points ratio
     function setTokenToPointsRatio(uint256 _tokenToPointsRatio) public onlyOwner {
         tokenToPointsRatio = _tokenToPointsRatio;
     }
 
-    function joinLoyaltyProgram() public {
+    // Set referral rewards
+    function setRefferalPoints(
+        uint256 _refferalTokensToSpend,
+        uint256 _refferalReward    
+    ) public onlyOwner {
+        refferalTokensToSpend = _refferalTokensToSpend;
+        refferalReward = _refferalReward;
+    }
+
+    function joinLoyaltyProgram(address _referrer) public {
         // Check if customer is already in the loyalty program
         require(customers[msg.sender].customerAddress == address(0), "Customer is already in the loyalty program");
+
+        // Check if customer is referred
+        if (
+            _referrer != address(0)
+            && customers[_referrer].customerAddress != address(0)
+            && _referrer != msg.sender
+        ) {
+            // Add referral to the contract
+            referrals[msg.sender] = Referral(false, _referrer, 0);
+
+            // Increase referrer loyalty rank
+            customers[_referrer].loyaltyRank++;
+        }
 
         // Add customer to the loyalty program
         customers[msg.sender] = Customer(msg.sender, block.timestamp, 0, 0);
@@ -102,6 +150,23 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
     function checkIfUserJoined() public view returns (bool) {
         return customers[msg.sender].customerAddress != address(0);
+    }
+
+    function addReferalRewards(uint256 amount) internal {
+        // Check referal
+        if (shop.referralReward && referrals[msg.sender].referrer != address(0) && !referrals[msg.sender].isClaimed) {
+            // Check if customer spent enough tokens
+            if (referrals[msg.sender].amountSpent + amount >= refferalTokensToSpend) {
+                // Add points to the referrer
+                loyaltyToken.mint(referrals[msg.sender].referrer, refferalReward);
+
+                // Mark referral as claimed
+                referrals[msg.sender].isClaimed = true;
+            }
+
+            // Add spent tokens to the referral
+            referrals[msg.sender].amountSpent += amount;
+        }
     }
 
     function purchaseNative(uint256 amount) external payable {
@@ -114,11 +179,13 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         // Check if customer sent enough tokens
         require(msg.value >= amount, "Not enough tokens sent");
 
+        addReferalRewards(amount);
+
         // Calculate points
         uint256 points = amount * tokenToPointsRatio;
 
         // Add points to the customer
-        require(LoyaltyToken.mint(msg.sender, points), "Minting failed");
+        loyaltyToken.mint(msg.sender, points);
 
         // Add points to the customer
         customers[msg.sender].points += points;
@@ -134,11 +201,13 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         // Transfer tokens from customer to contract
         require(IERC20(ERC20Token).transferFrom(msg.sender, address(this), amount), "Tokens transfer failed");
 
+        addReferalRewards(amount);
+
         // Calculate points
         uint256 points = amount * tokenToPointsRatio;
 
         // Add points to the customer
-        require(LoyaltyToken.mint(msg.sender, points), "Minting failed");
+        loyaltyToken.mint(msg.sender, points);
 
         // Add points to the customer
         customers[msg.sender].points += points;
@@ -181,12 +250,12 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         require(customers[msg.sender].points >= amount, "Not enough points");
 
         // Issue reward NFT to the customer
-        LoyaltyToken.permit(msg.sender, address(this), amount, deadline, v, r, s);
-        LoyaltyToken.transferFrom(msg.sender, address(this), amount);
+        loyaltyToken.permit(msg.sender, address(this), amount, deadline, v, r, s);
+        loyaltyToken.transferFrom(msg.sender, address(this), amount);
         totalPointsRedeemed += rewards[rewardId].rewardCost;
 
         // Issue reward NFT to the customer
-        LoyaltyNFT.safeMint(msg.sender, rewards[rewardId].rewardURI);
+        loyaltyNFT.safeMint(msg.sender, rewards[rewardId].rewardURI);
 
         // Subtract points from the customer
         customers[msg.sender].points -= amount;
