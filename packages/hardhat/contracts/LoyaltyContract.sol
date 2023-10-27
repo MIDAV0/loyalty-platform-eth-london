@@ -32,6 +32,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
     LoyaltyToken loyaltyToken;
     LoyaltyNFT loyaltyNFT;
 
+    address public loyaltyTokenAddress;
+
     uint256 public totalRewards = 1;
 
     uint256 public tokenToPointsRatio;
@@ -83,6 +85,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
             bool _paymentReward,
             bool _referralReward,
             bool _buySomeGetSome,
+            address initialOwner,
             address _ERC20Token,
             uint256 _tokenToPointsRatio,
             uint256 _refferalTokensToSpend,
@@ -90,16 +93,17 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
             string memory _tokenName,
             string memory _tokenSymbol
         )
-        Ownable(msg.sender)
+        Ownable(initialOwner)
     {
 
         tokenToPointsRatio = _tokenToPointsRatio;
         refferalTokensToSpend = _refferalTokensToSpend;
         refferalReward = _refferalReward;
         ERC20Token = _ERC20Token;
-        loyaltyToken = new LoyaltyToken(msg.sender, _tokenName, _tokenSymbol);
-        loyaltyNFT = new LoyaltyNFT(msg.sender, _tokenName, _tokenSymbol);
-        shop = Shop(_paymentReward, _referralReward, _buySomeGetSome, msg.sender);
+        loyaltyToken = new LoyaltyToken(address(this), _tokenName, _tokenSymbol);
+        loyaltyTokenAddress = address(loyaltyToken);
+        loyaltyNFT = new LoyaltyNFT(address(this), _tokenName, _tokenSymbol);
+        shop = Shop(_paymentReward, _referralReward, _buySomeGetSome, initialOwner);
     }
 
     // Set activated rewards
@@ -237,7 +241,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         rewards[rewardId].isActive = true;
     }
 
-    function redeemReward(uint256 rewardId, uint deadline, uint8 v, bytes32 r, bytes32 s) external {
+    function redeemReward(uint256 rewardId) external {
         // Check if customer is in the loyalty program
         require(checkIfUserJoined(), "Customer is not in the loyalty program");
 
@@ -250,7 +254,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         require(customers[msg.sender].points >= amount, "Not enough points");
 
         // Issue reward NFT to the customer
-        loyaltyToken.permit(msg.sender, address(this), amount, deadline, v, r, s);
+        // loyaltyToken.permit(msg.sender, address(this), amount, deadline, v, r, s);
         loyaltyToken.transferFrom(msg.sender, address(this), amount);
         totalPointsRedeemed += rewards[rewardId].rewardCost;
 
