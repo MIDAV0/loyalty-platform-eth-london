@@ -38,7 +38,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
     address public loyaltyTokenAddress;
 
-    uint256 public totalRewards = 1;
+    uint256 public totalRewards = 0;
 
     uint256 public tokenToPointsRatio;
     uint256 private contractNativeBalance;
@@ -229,11 +229,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
     }
 
     function addReward(uint256 rewardCost, string memory rewardName, string memory rewardURI) public onlyOwner {
+        totalRewards++;
         // Add reward to the contract
         rewards[totalRewards] = Reward(true, totalRewards, rewardCost, rewardName, rewardURI);
-
-        // Increment total rewards
-        totalRewards++;
     }
 
     function deactivateReward(uint256 rewardId) public onlyOwner {

@@ -90,9 +90,9 @@ export const useLoyaltyContractData = ({ contractAddress }: { contractAddress?: 
   }) as { data: boolean };
 
   const loadAllRewards = async () => {
-    if (contractAddress === undefined) return;
+    if (contractAddress === undefined || Number(totalRewards) === 0) return;
     const result: Promise<RewardData>[] = [];
-    for (let i = 0; i <= totalRewards; i += 1) {
+    for (let i = 0; i <= Number(totalRewards); i += 1) {
       const data = readContract({
         address: contractAddress as `0x${string}`,
         abi: LOYALTY_CONTRACT_ABI,
@@ -101,6 +101,7 @@ export const useLoyaltyContractData = ({ contractAddress }: { contractAddress?: 
       }) as Promise<RewardData>;
       result.push(data);
     }
+    result.shift();
     setAllRewards(await Promise.all(result));
   };
 

@@ -1,15 +1,7 @@
 import { useState } from "react";
 import { Card } from "./Card";
-import { useContractWrite } from "wagmi";
+import { useContractWrite, useWaitForTransaction } from "wagmi";
 import { LOYALTY_CONTRACT_ABI } from "~~/contracts/loyaltyContract";
-
-type RewardData = {
-  isActive: boolean;
-  rewardId: number;
-  rewardCost: number;
-  rewardName: string;
-  rewardURI: string;
-};
 
 export const Rewards = ({
   contractAddress,
@@ -34,29 +26,68 @@ export const Rewards = ({
   contractPaymentReward: boolean | undefined;
   contractReferralReward: boolean | undefined;
   contractBuySomeGetSome: boolean | undefined;
-  allRewards: RewardData[] | undefined;
+  allRewards: any[] | undefined;
 }) => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [rewardName, setRewardName] = useState("");
   const [rewardURI, setRewardURI] = useState("");
   const [rewardCost, setRewardCost] = useState(0);
+  const [showAll, setShowAll] = useState(true);
 
   const {
-    data: purchaseCredits,
-    write: writeAddReward,
-    isLoading: purchaseLoading,
+    data: addRewards,
+    writeAsync: writeAddReward,
+    isLoading: additionLoading,
   } = useContractWrite({
     address: contractAddress as `0x${string}`,
     abi: LOYALTY_CONTRACT_ABI,
     functionName: "addReward",
   });
 
-  const { isSuccess: isSuccessCreate, isLoading: isApproveTxLoading } = useWaitForTransaction({
-    hash: approveTokens?.hash,
+  const { isSuccess: isSuccessCreate, isLoading: isCreateTxLoading } = useWaitForTransaction({
+    hash: addRewards?.hash,
   });
 
-  const handleCreation = () => {
-    writeAddReward?.({ args: [rewardCost, rewardName, rewardURI] });
+  const handleCreation = async () => {
+    console.log("handleCreation");
+    await writeAddReward?.({ args: [rewardCost, rewardName, rewardURI] });
+    if (isSuccessCreate) setIsCreateOpen(false);
+  };
+
+//   const {
+//     data: activateReward,
+//     writeAsync: writeActivateReward,
+//     isLoading: activateLoading,
+//   } = useContractWrite({
+//     address: contractAddress as `0x${string}`,
+//     abi: LOYALTY_CONTRACT_ABI,
+//     functionName: "activateReward",
+//   });
+
+//   const { isLoading: isActivateTxLoading } = useWaitForTransaction({
+//     hash: activateReward?.hash,
+//   });
+
+//   const {
+//     data: deactivateReward,
+//     writeAsync: writeDeactivateReward,
+//     isLoading: deactivateLoading,
+//   } = useContractWrite({
+//     address: contractAddress as `0x${string}`,
+//     abi: LOYALTY_CONTRACT_ABI,
+//     functionName: "deactivateReward",
+//   });
+
+//   const { isLoading: isDeactivateTxLoading } = useWaitForTransaction({
+//     hash: deactivateReward?.hash,
+//   });
+
+  const editReward = async (rewardId: number, isActive: boolean) => {
+    // if (isActive) {
+    //   await writeActivateReward?.({ args: [Number(rewardId)] });
+    // } else {
+    //   await writeDeactivateReward?.({ args: [Number(rewardId)] });
+    // }
   };
 
   return (
@@ -81,12 +112,16 @@ export const Rewards = ({
               onChange={e => setRewardURI(e.target.value)}
             />
             <input
-              type="text"
+              type="number"
               className="w-full px-4 py-2 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               placeholder="Reward Cost"
               onChange={e => setRewardCost(parseInt(e.target.value))}
             />
-            <button className="btn btn-primary" onClick={() => setIsCreateOpen(false)}>
+            <button
+              disabled={additionLoading || isCreateTxLoading || !rewardName || !rewardURI || !rewardCost}
+              className="btn btn-primary"
+              onClick={handleCreation}
+            >
               Create
             </button>
           </div>
@@ -95,6 +130,11 @@ export const Rewards = ({
         <div className="flex flex-col gap-6">
           <div className="flex gap-8 relative items-center">
             <div>Rewards {allRewards?.length}</div>
+            <div>
+              <span>Active</span>
+              <input type="checkbox" className="toggle" checked={showAll} onChange={() => setShowAll(prev => !prev)} />
+              <span>All</span>
+            </div>
             <input
               type="text"
               className="w-full px-4 py-2 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
@@ -106,14 +146,21 @@ export const Rewards = ({
           </div>
           <div className="grid grid-cols-3 gap-4">
             {/* Cards */}
-            {allRewards?.map((rewardData, index) => (
-              <Card
-                key={index}
-                title={rewardData.rewardName}
-                description={rewardData.rewardURI}
-                points={rewardData.rewardCost}
-              />
-            ))}
+            {allRewards
+              ?.filter(rewardData => (showAll ? true : rewardData[0]))
+              .map((rewardData, index) => (
+                <Card
+                  key={index}
+                  contractAddress={contractAddress}
+                  title={rewardData[3]}
+                  description={rewardData[4]}
+                  points={rewardData[2]}
+                  isActive={rewardData[0]}
+                  rewardId={rewardData[1]}
+                  isBusiness={true}
+                  editReward={editReward}
+                />
+              ))}
           </div>
         </div>
       )}
