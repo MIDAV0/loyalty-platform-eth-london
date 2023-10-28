@@ -58,7 +58,7 @@ const ProcessPayments: NextPage = () => {
 
   const handlePurchase = async (contractAddress: string) => {
     await writeApprove?.({ args: [contractAddress, parseEther("100")] });
-    await writePurchaseItem?.({ args: [parseEther("100")] });
+    await writePurchaseItem?.({ args: [100] });
   };
 
   return (

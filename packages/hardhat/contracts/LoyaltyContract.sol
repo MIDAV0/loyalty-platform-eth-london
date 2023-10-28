@@ -250,7 +250,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         rewards[rewardId].isActive = true;
     }
 
-    function redeemReward(uint256 rewardId) external {
+    function getReward(uint256 rewardId) external {
         // Check if customer is in the loyalty program
         require(checkIfUserJoined(), "Customer is not in the loyalty program");
 

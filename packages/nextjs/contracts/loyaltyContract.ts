@@ -208,6 +208,19 @@ export const LOYALTY_CONTRACT_ABI = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "rewardId",
+        type: "uint256",
+      },
+    ],
+    name: "getReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "_referrer",
         type: "address",
@@ -279,19 +292,6 @@ export const LOYALTY_CONTRACT_ABI = [
       },
     ],
     name: "purchaseToken",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "rewardId",
-        type: "uint256",
-      },
-    ],
-    name: "redeemReward",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

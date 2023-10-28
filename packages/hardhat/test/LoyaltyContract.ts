@@ -95,9 +95,10 @@ describe("LoyaltyContract", function () {
       await loyaltyToken.connect(user).approve(loyaltyContract.address, ethers.utils.parseEther("5"));
 
       // Purchase reward
-      await loyaltyContract.connect(user).redeemReward(1);
+      await loyaltyContract.connect(user).getReward(1);
 
       const userDataAfterPurchase = await loyaltyContract.customers(user.address);
+      console.log("User data after purchase: ", userDataAfterPurchase.points.toString());
       expect(userDataAfterPurchase.points).to.equal(95);
     });
   });

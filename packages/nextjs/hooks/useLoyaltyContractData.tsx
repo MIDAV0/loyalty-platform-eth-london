@@ -1,8 +1,7 @@
+import { useEffect, useState } from "react";
+import { readContract } from "@wagmi/core";
 import { useContractRead } from "wagmi";
 import { LOYALTY_CONTRACT_ABI } from "~~/contracts/loyaltyContract";
-import { readContract } from '@wagmi/core';
-import { useEffect, useState } from "react";
-
 
 export const useLoyaltyContractData = ({ contractAddress }: { contractAddress?: string }) => {
   const [allRewards, setAllRewards] = useState<any[]>([]);
@@ -82,19 +81,22 @@ export const useLoyaltyContractData = ({ contractAddress }: { contractAddress?: 
   }) as { data: boolean };
 
   const loadAllRewards = async () => {
-    if (contractAddress === undefined || Number(totalRewards) === 0) return;
-    const result: Promise<any>[] = [];
-    for (let i = 0; i <= Number(totalRewards); i += 1) {
-      const data = readContract({
-        address: contractAddress as `0x${string}`,
-        abi: LOYALTY_CONTRACT_ABI,
-        functionName: "rewards",
-        args: [i],
-      }) as Promise<any>;
-      result.push(data);
+    if (contractAddress === undefined) return;
+    if (!totalRewards || Number(totalRewards) === 0) {
+      setAllRewards([]);
+    } else {
+      const result: Promise<any>[] = [];
+      for (let i = 1; i <= Number(totalRewards); i += 1) {
+        const data = readContract({
+          address: contractAddress as `0x${string}`,
+          abi: LOYALTY_CONTRACT_ABI,
+          functionName: "rewards",
+          args: [i],
+        }) as Promise<any>;
+        result.push(data);
+      }
+      setAllRewards(await Promise.all(result));
     }
-    result.shift();
-    setAllRewards(await Promise.all(result));
   };
 
   useEffect(() => {

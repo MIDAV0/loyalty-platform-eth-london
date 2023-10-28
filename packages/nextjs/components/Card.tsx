@@ -1,5 +1,7 @@
+import { parseEther } from "viem";
 import { useContractWrite, useWaitForTransaction } from "wagmi";
 import { LOYALTY_CONTRACT_ABI } from "~~/contracts/loyaltyContract";
+import { LOYALTY_TOKEN_ABI } from "~~/contracts/loyaltyToken";
 
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/` : "/";
 
@@ -15,6 +17,7 @@ type CardProps = {
   editReward?: (rewardId: number, isActive: boolean) => void;
   redeemReward?: (rewardId: number) => void;
   canRedeem?: boolean;
+  loyaltyTokenAddress?: any[];
 };
 
 export const Card = ({
@@ -28,8 +31,24 @@ export const Card = ({
   isBusiness = true,
   editReward = () => {},
   canRedeem = true,
+  loyaltyTokenAddress = [],
 }: CardProps) => {
   const imageUrl = baseUrl + image;
+
+  // Approve Loyalty Token
+  const {
+    data: approveLoyaltyToken,
+    writeAsync: writeApprove,
+    isLoading: approveLoading,
+  } = useContractWrite({
+    address: loyaltyTokenAddress as `0x${string}`,
+    abi: LOYALTY_TOKEN_ABI,
+    functionName: "approve",
+  });
+
+  const { isSuccess: isSucessApprove, isLoading: isApproveTxLoading } = useWaitForTransaction({
+    hash: approveLoyaltyToken?.hash,
+  });
 
   // Redeem TX
   const {
@@ -39,7 +58,7 @@ export const Card = ({
   } = useContractWrite({
     address: contractAddress as `0x${string}`,
     abi: LOYALTY_CONTRACT_ABI,
-    functionName: "redeemReward",
+    functionName: "getReward",
   });
 
   const { isSuccess: isSucessRedeem, isLoading: isRedeemTxLoading } = useWaitForTransaction({
@@ -47,8 +66,12 @@ export const Card = ({
   });
 
   const redeemRewardwithID = async (rewardId: number) => {
+    await writeApprove?.({
+      args: [contractAddress, parseEther(`${Number(points)}`)],
+    });
+
     await writeRedeemReward?.({
-      args: [Number(rewardId)],
+      args: [rewardId],
     });
   };
 

@@ -93,7 +93,7 @@ export const CustomerDashboard = ({ shopData, deactivateShop = () => {} }: Custo
         {/* Smaller Block 1 */}
         <div className="col-span-1 row-span-1 bg-green-500 rounded-md h-80 p-4">
           {isJoined ? (
-            <div>Points: {formatUnits(userData[3], 18)}</div>
+            <div>Points: {Number(userData[3])}</div>
           ) : (
             <div>
               <div className="form-control w-full">
@@ -153,6 +153,7 @@ export const CustomerDashboard = ({ shopData, deactivateShop = () => {} }: Custo
               rewardId={rewardData[1]}
               isBusiness={false}
               canRedeem={isJoined}
+              loyaltyTokenAddress={loyaltyTokenAddress}
             />
           ))}
       </div>
