@@ -2,9 +2,11 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { formatUnits, parseEther } from "viem";
+import { useAccount } from "wagmi";
 import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
-import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { useOutsideClick, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 interface HeaderMenuLink {
   label: string;
@@ -56,6 +58,22 @@ export const HeaderMenuLinks = () => {
 export const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const burgerMenuRef = useRef<HTMLDivElement>(null);
+
+  const { address } = useAccount();
+
+  const { writeAsync, isLoading, isMining } = useScaffoldContractWrite({
+    contractName: "StableToken",
+    functionName: "mint",
+    args: [address, parseEther("100")],
+    blockConfirmations: 1,
+  });
+
+  const { data: usdcBalance } = useScaffoldContractRead({
+    contractName: "StableToken",
+    functionName: "balanceOf",
+    args: [address],
+  });
+
   useOutsideClick(
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
@@ -99,9 +117,17 @@ export const Header = () => {
           <HeaderMenuLinks />
         </ul>
       </div>
+      <div>USDC {usdcBalance ? formatUnits(usdcBalance, 18) : 0}</div>
       <div className="navbar-end flex-grow mr-4">
         <RainbowKitCustomConnectButton />
         <FaucetButton />
+        <button
+          className="btn btn-ghost btn-sm rounded-btn"
+          disabled={isLoading || isMining}
+          onClick={() => writeAsync()}
+        >
+          Mint 100
+        </button>
       </div>
     </div>
   );

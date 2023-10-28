@@ -557,4 +557,11 @@ export const LOYALTY_CONTRACT_ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [],
+    name: "withdrawTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ];

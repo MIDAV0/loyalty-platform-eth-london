@@ -14,6 +14,7 @@ type CardProps = {
   isBusiness?: boolean;
   editReward?: (rewardId: number, isActive: boolean) => void;
   redeemReward?: (rewardId: number) => void;
+  canRedeem?: boolean;
 };
 
 export const Card = ({
@@ -26,9 +27,30 @@ export const Card = ({
   rewardId = 0,
   isBusiness = true,
   editReward = () => {},
-  redeemReward = () => {},
+  canRedeem = true,
 }: CardProps) => {
   const imageUrl = baseUrl + image;
+
+  // Redeem TX
+  const {
+    data: redeemRewardData,
+    writeAsync: writeRedeemReward,
+    isLoading: redeemLoading,
+  } = useContractWrite({
+    address: contractAddress as `0x${string}`,
+    abi: LOYALTY_CONTRACT_ABI,
+    functionName: "redeemReward",
+  });
+
+  const { isSuccess: isSucessRedeem, isLoading: isRedeemTxLoading } = useWaitForTransaction({
+    hash: redeemRewardData?.hash,
+  });
+
+  const redeemRewardwithID = async (rewardId: number) => {
+    await writeRedeemReward?.({
+      args: [Number(rewardId)],
+    });
+  };
 
   return (
     <div className="card w-96 bg-base-100 shadow-xl">
@@ -48,12 +70,11 @@ export const Card = ({
             {isActive ? "Active" : "Deactivated"}
           </span>
           <span className="badge badge-secondary">{Number(points)} points</span>
-          <button
-            className="btn btn-primary"
-            onClick={isBusiness ? editReward(rewardId, isActive) : redeemReward(rewardId)}
-          >
-            {isBusiness ? (isActive ? "Deactivate" : "Activate") : "Redeem"}
-          </button>
+          {canRedeem && !isBusiness && (
+            <button className="btn btn-primary" onClick={() => redeemRewardwithID(rewardId)}>
+              {isBusiness ? (isActive ? "Deactivate" : "Activate") : "Redeem"}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { EtherscanProvider } from "@ethersproject/providers";
-import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import useLoyaltyContractData from "~~/hooks/useLoyaltyContractData";
 
 export const BSettings = ({
@@ -35,8 +35,10 @@ export const BSettings = ({
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [shopDescription, setShopDescription] = useState("");
-  const [usdcAddress, setUsdcAddress] = useState("0x9d8E4e965FeE1546f6b4Ebdb17B8C9328531147F");
   const [isEditing, setIsEditing] = useState(false);
+
+  // ContractName: name of the deployed contract
+  const { data: deployedContractData } = useDeployedContractInfo("StableToken");
 
   const { writeAsync, isLoading, isMining } = useScaffoldContractWrite({
     contractName: "LoyaltyFactory",
@@ -45,7 +47,7 @@ export const BSettings = ({
       isPayToGetEnabled,
       isReferralEnabled,
       isBuySomeGetSomeEnabled,
-      usdcAddress,
+      deployedContractData?.address as string,
       tokenRatio,
       spendAmount,
       rewardAmount,

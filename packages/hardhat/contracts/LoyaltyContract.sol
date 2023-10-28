@@ -160,7 +160,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         }
 
         // Add customer to the loyalty program
-        customers[msg.sender] = Customer(msg.sender, block.timestamp, 0, 0);
+        customers[msg.sender] = Customer(msg.sender, block.timestamp, 1, 0);
     }
 
     function checkIfUserJoined() public view returns (bool) {
@@ -272,5 +272,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
         // Subtract points from the customer
         customers[msg.sender].points -= amount;
+    }
+
+    function withdrawTokens() public onlyOwner {
+        // Transfer tokens from contract to owner
+        require(IERC20(ERC20Token).transfer(owner(), IERC20(ERC20Token).balanceOf(address(this))), "Tokens transfer failed");
     }
  }
