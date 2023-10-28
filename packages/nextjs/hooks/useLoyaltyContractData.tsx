@@ -4,16 +4,8 @@ import { readContract } from '@wagmi/core';
 import { useEffect, useState } from "react";
 
 
-type RewardData = {
-  isActive: boolean;
-  rewardId: number;
-  rewardCost: number;
-  rewardName: string;
-  rewardURI: string;
-};
-
 export const useLoyaltyContractData = ({ contractAddress }: { contractAddress?: string }) => {
-  const [allRewards, setAllRewards] = useState<RewardData[]>([]);
+  const [allRewards, setAllRewards] = useState<any[]>([]);
 
   const { data: contractTokenName } = useContractRead({
     address: contractAddress as `0x${string}`,
@@ -91,14 +83,14 @@ export const useLoyaltyContractData = ({ contractAddress }: { contractAddress?: 
 
   const loadAllRewards = async () => {
     if (contractAddress === undefined || Number(totalRewards) === 0) return;
-    const result: Promise<RewardData>[] = [];
+    const result: Promise<any>[] = [];
     for (let i = 0; i <= Number(totalRewards); i += 1) {
       const data = readContract({
         address: contractAddress as `0x${string}`,
         abi: LOYALTY_CONTRACT_ABI,
         functionName: "rewards",
         args: [i],
-      }) as Promise<RewardData>;
+      }) as Promise<any>;
       result.push(data);
     }
     result.shift();

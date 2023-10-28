@@ -13,6 +13,7 @@ type CardProps = {
   rewardId?: number;
   isBusiness?: boolean;
   editReward?: (rewardId: number, isActive: boolean) => void;
+  redeemReward?: (rewardId: number) => void;
 };
 
 export const Card = ({
@@ -25,6 +26,7 @@ export const Card = ({
   rewardId = 0,
   isBusiness = true,
   editReward = () => {},
+  redeemReward = () => {},
 }: CardProps) => {
   const imageUrl = baseUrl + image;
 
@@ -46,7 +48,10 @@ export const Card = ({
             {isActive ? "Active" : "Deactivated"}
           </span>
           <span className="badge badge-secondary">{Number(points)} points</span>
-          <button className="btn btn-primary" onClick={isBusiness ? editReward(rewardId, isActive) : redeemReward()}>
+          <button
+            className="btn btn-primary"
+            onClick={isBusiness ? editReward(rewardId, isActive) : redeemReward(rewardId)}
+          >
             {isBusiness ? (isActive ? "Deactivate" : "Activate") : "Redeem"}
           </button>
         </div>

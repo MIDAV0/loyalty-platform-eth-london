@@ -34,6 +34,7 @@ export const BSettings = ({
   const [rewardAmount, setRewardAmount] = useState(0);
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
+  const [shopDescription, setShopDescription] = useState("");
   const [usdcAddress, setUsdcAddress] = useState("0x9d8E4e965FeE1546f6b4Ebdb17B8C9328531147F");
   const [isEditing, setIsEditing] = useState(false);
 
@@ -50,6 +51,7 @@ export const BSettings = ({
       rewardAmount,
       tokenName,
       tokenSymbol,
+      shopDescription,
     ],
     blockConfirmations: 1,
     onBlockConfirmation: txnReceipt => {
@@ -217,13 +219,13 @@ export const BSettings = ({
             <div className="border-1 border-solid rounded-md p-4 bg-slate-400 flex flex-col gap-5 items-center">
               <div className="form-control w-full">
                 <label className="label">
-                  <span className="label-text">TOKEN NAME</span>
+                  <span className="label-text">BUSINESS NAME</span>
                 </label>
                 <label className="input-group">
                   <span>NAME</span>
                   <input
                     type="text"
-                    placeholder="My Token"
+                    placeholder="Breakfast"
                     className="input input-bordered"
                     onChange={e => setTokenName(e.target.value)}
                   />
@@ -242,6 +244,20 @@ export const BSettings = ({
                     minLength={2}
                     maxLength={4}
                     onChange={e => setTokenSymbol(e.target.value)}
+                  />
+                </label>
+              </div>
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">BUSINESS DESCRIPTION</span>
+                </label>
+                <label className="input-group">
+                  <span>DESCRIPTION</span>
+                  <input
+                    type="text"
+                    placeholder="Nice place"
+                    className="input input-bordered"
+                    onChange={e => setShopDescription(e.target.value)}
                   />
                 </label>
               </div>

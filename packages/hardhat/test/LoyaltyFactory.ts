@@ -29,6 +29,7 @@ describe("LoyaltyFactory", function () {
         10,
         "Starbucks",
         "SBUX",
+        "Coffee shop",
       );
 
       const loyaltyContractAddress = await loyaltyFactory.businessToLoyaltyContracts(owner.address);

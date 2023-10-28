@@ -4,7 +4,14 @@ pragma solidity >=0.8.0 <0.9.0;
 import "./LoyaltyContract.sol";
 
 contract LoyaltyFactory {
-    address[] public deployedLoyaltyContracts;
+
+    struct ShopInfo {
+        string name;
+        string description;
+        address contractAddress;
+    }
+
+    ShopInfo[] public deployedLoyaltyContracts;
     mapping(address => address) public businessToLoyaltyContracts;
 
     function createLoyaltyContract(
@@ -16,7 +23,8 @@ contract LoyaltyFactory {
         uint256 refferalTokensToSpend,
         uint256 refferalReward,
         string memory _tokenName,
-        string memory _tokenSymbol
+        string memory _tokenSymbol,
+        string memory _shopDescription
     ) public {
         // One business can only have one loyalty contract
         require(
@@ -40,14 +48,20 @@ contract LoyaltyFactory {
                 )
             );
 
-        deployedLoyaltyContracts.push(newLoyaltyContract);
+        deployedLoyaltyContracts.push(
+            ShopInfo({
+                name: _tokenName,
+                description: _shopDescription,
+                contractAddress: newLoyaltyContract
+            })
+        );
         businessToLoyaltyContracts[msg.sender] = newLoyaltyContract;
     }
 
     function getDeployedLoyaltyContracts()
         public
         view
-        returns (address[] memory)
+        returns (ShopInfo[] memory)
     {
         return deployedLoyaltyContracts;
     }

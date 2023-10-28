@@ -30,7 +30,18 @@ describe("LoyaltyContract", function () {
     loyaltyFactory = (await loyaltyFactoryFactory.deploy()) as LoyaltyFactory;
     await loyaltyFactory.deployed();
 
-    await loyaltyFactory.createLoyaltyContract(true, true, true, stableToken.address, 1, 10, 10, "Starbucks", "SBUX");
+    await loyaltyFactory.createLoyaltyContract(
+      true,
+      true,
+      true,
+      stableToken.address,
+      1,
+      10,
+      10,
+      "Starbucks",
+      "SBUX",
+      "Coffee shop",
+    );
 
     const loyaltyContractAddress = await loyaltyFactory.businessToLoyaltyContracts(owner.address);
 

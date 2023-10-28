@@ -5,7 +5,7 @@ const contracts = {
       name: "localhost",
       contracts: {
         LoyaltyFactory: {
-          address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+          address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
           abi: [
             {
               inputs: [
@@ -73,6 +73,11 @@ const contracts = {
                   name: "_tokenSymbol",
                   type: "string",
                 },
+                {
+                  internalType: "string",
+                  name: "_shopDescription",
+                  type: "string",
+                },
               ],
               name: "createLoyaltyContract",
               outputs: [],
@@ -90,8 +95,18 @@ const contracts = {
               name: "deployedLoyaltyContracts",
               outputs: [
                 {
+                  internalType: "string",
+                  name: "name",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "description",
+                  type: "string",
+                },
+                {
                   internalType: "address",
-                  name: "",
+                  name: "contractAddress",
                   type: "address",
                 },
               ],
@@ -103,9 +118,26 @@ const contracts = {
               name: "getDeployedLoyaltyContracts",
               outputs: [
                 {
-                  internalType: "address[]",
+                  components: [
+                    {
+                      internalType: "string",
+                      name: "name",
+                      type: "string",
+                    },
+                    {
+                      internalType: "string",
+                      name: "description",
+                      type: "string",
+                    },
+                    {
+                      internalType: "address",
+                      name: "contractAddress",
+                      type: "address",
+                    },
+                  ],
+                  internalType: "struct LoyaltyFactory.ShopInfo[]",
                   name: "",
-                  type: "address[]",
+                  type: "tuple[]",
                 },
               ],
               stateMutability: "view",
