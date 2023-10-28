@@ -32,6 +32,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
     LoyaltyToken loyaltyToken;
     LoyaltyNFT loyaltyNFT;
 
+    bool public paymentReward;
+    bool public referralReward;
+    bool public buySomeGetSome;
+
     address public loyaltyTokenAddress;
 
     uint256 public totalRewards = 1;
@@ -46,6 +50,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
     // If person you referred spends X tokens then you get Y points
     uint256 public refferalTokensToSpend;
     uint256 public refferalReward;
+
+    string public tokenName;
+    string public tokenSymbol;
 
     struct Referral {
         bool isClaimed;
@@ -68,15 +75,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         string rewardURI;
     }
 
-    struct Shop {
-        bool paymentReward;
-        bool referralReward;
-        bool buySomeGetSome;
-        address owner;
-    }
-
-    Shop public shop;
-
     mapping(address => Customer) public customers;
     mapping(address => Referral) public referrals;
     mapping(uint256 => Reward) public rewards;
@@ -95,7 +93,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         )
         Ownable(initialOwner)
     {
-
         tokenToPointsRatio = _tokenToPointsRatio;
         refferalTokensToSpend = _refferalTokensToSpend;
         refferalReward = _refferalReward;
@@ -103,18 +100,32 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
         loyaltyToken = new LoyaltyToken(address(this), _tokenName, _tokenSymbol);
         loyaltyTokenAddress = address(loyaltyToken);
         loyaltyNFT = new LoyaltyNFT(address(this), _tokenName, _tokenSymbol);
-        shop = Shop(_paymentReward, _referralReward, _buySomeGetSome, initialOwner);
+        tokenName = _tokenName;
+        tokenSymbol = _tokenSymbol;
+        paymentReward = _paymentReward;
+        referralReward = _referralReward;
+        buySomeGetSome = _buySomeGetSome;
     }
 
     // Set activated rewards
     function setActivatedRewards(
             bool _paymentReward,
             bool _referralReward,
-            bool _buySomeGetSome
+            bool _buySomeGetSome,
+            uint256 _tokenRatio,
+            uint256 _refferalTokensToSpend,
+            uint256 _refferalReward
         ) public onlyOwner {
-        shop.paymentReward = _paymentReward;
-        shop.referralReward = _referralReward;
-        shop.buySomeGetSome = _buySomeGetSome;
+        paymentReward = _paymentReward;
+        referralReward = _referralReward;
+        buySomeGetSome = _buySomeGetSome;
+        if (_referralReward) {
+            refferalTokensToSpend = _refferalTokensToSpend;
+            refferalReward = _refferalReward;
+        }
+        if (_paymentReward) {
+            tokenToPointsRatio = _tokenRatio;
+        }
     }
 
     // Set token to points ratio
@@ -158,7 +169,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
     function addReferalRewards(uint256 amount) internal {
         // Check referal
-        if (shop.referralReward && referrals[msg.sender].referrer != address(0) && !referrals[msg.sender].isClaimed) {
+        if (referralReward && referrals[msg.sender].referrer != address(0) && !referrals[msg.sender].isClaimed) {
             // Check if customer spent enough tokens
             if (referrals[msg.sender].amountSpent + amount >= refferalTokensToSpend) {
                 // Add points to the referrer
@@ -175,7 +186,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
     function purchaseNative(uint256 amount) external payable {
         // Check if rewards are activated
-        require(shop.paymentReward, "Payment rewards are not activated");
+        require(paymentReward, "Payment rewards are not activated");
 
         // Check if customer is in the loyalty program
         require(checkIfUserJoined(), "Customer is not in the loyalty program");
@@ -197,7 +208,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
     function purchaseToken(uint256 amount) external {
         // Check if rewards are activated
-        require(shop.paymentReward, "Payment rewards are not activated");
+        require(paymentReward, "Payment rewards are not activated");
 
         // Check if customer is in the loyalty program
         require(checkIfUserJoined(), "Customer is not in the loyalty program");

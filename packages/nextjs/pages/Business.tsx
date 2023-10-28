@@ -1,26 +1,42 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
-import { Card } from "~~/components/Card";
+import { useAccount } from "wagmi";
 import { BSettings } from "~~/components/BSettings";
+import { Card } from "~~/components/Card";
+import { Rewards } from "~~/components/Rewards";
+import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import useLoyaltyContractData from "~~/hooks/useLoyaltyContractData";
 
 // Show user data: balance, transaction
 // Shop purchases (with rewards)
 // For each shop there should be a data for referred people loyalty score
-/*
-        bool _paymentReward,
-        bool _referralReward,
-        bool _buySomeGetSome,
-        address ERC20Token,
-        uint256 tokenToPointsRatio,
-        uint256 refferalTokensToSpend,
-        uint256 refferalReward,
-        string memory _tokenName,
-        string memory _tokenSymbol
-*/
 
 const Business: NextPage = () => {
   const [showTab, setShowTab] = useState<"dashboard" | "rewards" | "settings">("dashboard");
+
+  const { address } = useAccount();
+
+  const { data: loyaltyContractAddress } = useScaffoldContractRead({
+    contractName: "LoyaltyFactory",
+    functionName: "businessToLoyaltyContracts",
+    args: [address],
+    watch: true,
+  });
+
+  const {
+    contractTokenName,
+    contractTokenSymbol,
+    loyaltyTokenAddress,
+    tokenToPointsRatio,
+    totalPointsRedeemed,
+    refferalTokensToSpend,
+    refferalReward,
+    allRewards,
+    contractPaymentReward,
+    contractReferralReward,
+    contractBuySomeGetSome,
+  } = useLoyaltyContractData({ contractAddress: loyaltyContractAddress });
 
   return (
     <>
@@ -64,36 +80,36 @@ const Business: NextPage = () => {
             </div>
           )}
           {showTab === "rewards" && (
-            <div className="flex flex-col gap-6">
-              <div className="flex gap-8 relative items-center">
-                <div>Items</div>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-                  placeholder="Search..."
-                />
-                <button className="absolute right-0 top-0 mt-3 mr-4">
-                  <svg className="h-4 w-4 fill-current" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.707 10.293a1 1 0 01-1.414 1.414l-2.5-2.5a1 1 0 010-1.414l2.5-2.5a1 1 0 111.414 1.414L9.414 8l2.293 2.293z" />
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M7 14a7 7 0 100-14A7 7 0 007 14zm0-1A6 6 0 107 2a6 6 0 000 11z"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                {/* Cards */}
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <Card key={index} />
-                ))}
-              </div>
-            </div>
+            <>
+              <Rewards
+                contractAddress={loyaltyContractAddress}
+                contractTokenName={contractTokenName}
+                contractTokenSymbol={contractTokenSymbol}
+                loyaltyTokenAddress={loyaltyTokenAddress}
+                tokenToPointsRatio={tokenToPointsRatio}
+                refferalTokensToSpend={refferalTokensToSpend}
+                refferalReward={refferalReward}
+                contractPaymentReward={contractPaymentReward}
+                contractReferralReward={contractReferralReward}
+                contractBuySomeGetSome={contractBuySomeGetSome}
+                allRewards={allRewards}
+              />
+            </>
           )}
           {showTab === "settings" && (
             <>
-              <BSettings />
+              <BSettings
+                contractAddress={loyaltyContractAddress}
+                contractTokenName={contractTokenName}
+                contractTokenSymbol={contractTokenSymbol}
+                loyaltyTokenAddress={loyaltyTokenAddress}
+                tokenToPointsRatio={tokenToPointsRatio}
+                refferalTokensToSpend={refferalTokensToSpend}
+                refferalReward={refferalReward}
+                contractPaymentReward={contractPaymentReward}
+                contractReferralReward={contractReferralReward}
+                contractBuySomeGetSome={contractBuySomeGetSome}
+              />
             </>
           )}
         </div>

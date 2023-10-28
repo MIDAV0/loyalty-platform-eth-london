@@ -39,11 +39,13 @@ describe("LoyaltyContract", function () {
 
   describe("Deployment", function () {
     it("should get correct store data", async function () {
-      const shop = await loyaltyContract.shop();
-      expect(shop.owner).to.equal(owner.address);
-      expect(shop.paymentReward).to.equal(true);
-      expect(shop.referralReward).to.equal(true);
-      expect(shop.buySomeGetSome).to.equal(true);
+      const paymentReward = await loyaltyContract.paymentReward();
+      const referralReward = await loyaltyContract.referralReward();
+      const buySomeGetSome = await loyaltyContract.buySomeGetSome();
+
+      expect(paymentReward).to.equal(true);
+      expect(referralReward).to.equal(true);
+      expect(buySomeGetSome).to.equal(true);
 
       const shopOwner = await loyaltyContract.owner();
       expect(shopOwner).to.equal(owner.address);
