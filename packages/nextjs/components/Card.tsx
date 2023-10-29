@@ -67,7 +67,7 @@ export const Card = ({
 
   const redeemRewardwithID = async (rewardId: number) => {
     await writeApprove?.({
-      args: [contractAddress, parseEther(`${Number(points)}`)],
+      args: [contractAddress, parseEther(points.toString())],
     });
 
     await writeRedeemReward?.({
@@ -89,8 +89,16 @@ export const Card = ({
           </div>
 
           {canRedeem && !isBusiness && (
-            <button className="btn btn-primary" onClick={() => redeemRewardwithID(rewardId)}>
-              {isBusiness ? (isActive ? "Deactivate" : "Activate") : "Redeem"}
+            <button
+              disabled={redeemLoading || approveLoading || isRedeemTxLoading || isApproveTxLoading}
+              className="btn btn-primary"
+              onClick={() => redeemRewardwithID(rewardId)}
+            >
+              {redeemLoading || approveLoading || isRedeemTxLoading || isApproveTxLoading ? (
+                <span className="loading loading-dots loading-sm"></span>
+              ) : (
+                "Redeem"
+              )}
             </button>
           )}
           {isBusiness && (
