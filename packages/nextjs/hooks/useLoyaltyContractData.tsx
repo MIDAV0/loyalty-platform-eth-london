@@ -115,6 +115,7 @@ export const useLoyaltyContractData = ({ contractAddress }: { contractAddress?: 
     contractPaymentReward,
     contractReferralReward,
     contractBuySomeGetSome,
+    totalRewards,
   };
 };
 

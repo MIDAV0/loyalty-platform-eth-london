@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
+import { Bar } from "react-chartjs-2";
 import { useAccount } from "wagmi";
 import {
   ArrowCircleDownIcon,
@@ -53,6 +54,7 @@ const Business: NextPage = () => {
     contractPaymentReward,
     contractReferralReward,
     contractBuySomeGetSome,
+    totalRewards,
   } = useLoyaltyContractData({ contractAddress: loyaltyContractAddress });
 
   const sideBarElement = (
@@ -106,22 +108,32 @@ const Business: NextPage = () => {
             <div className="grid grid-cols-3 grid-rows-2 gap-4">
               {/* Smaller Block 1 */}
               <div className="col-span-1 row-span-1 bg-green-500 rounded-md h-80">
-                <div className="p-4">Number 1</div>
+                <div className="p-2 h-full flex flex-col items-center justify-center align-middle gap-3">
+                  <h1 className="text-3xl font-semibold text-heading">{Number(totalRewards)}</h1>
+                  <h1 className="text-2xl font-semibold text-heading">Rewards</h1>
+                </div>
               </div>
 
               {/* Smaller Block 2 */}
-              <div className="col-span-1 row-span-1 bg-green-500 rounded-md">
-                <div className="p-4">Number 2</div>
+              <div className="col-span-1 row-span-1 bg-white shadow-lg rounded-lg p-5">
+                <div className="p-2 h-full flex flex-col items-center justify-center gap-3">
+                  <h1 className="text-3xl font-semibold text-heading">{Number(totalPointsRedeemed)}</h1>
+                  <h1 className="text-2xl font-semibold text-heading">Points redeemed</h1>
+                </div>
               </div>
 
               {/* Bigger Block (List) */}
               <div className="col-span-1 row-span-2 bg-orange-400 rounded-md">
-                <div className="p-4">List</div>
+                <div className="p-4 flex flex-col items-center justify-center gap-3">
+                  <h1 className="text-3xl font-semibold text-heading">Customers</h1>
+                </div>
               </div>
 
               {/* Data Table Block */}
               <div className="col-span-2 row-span-1 bg-blue-500 rounded-md">
-                <div className="p-4">Data Table</div>
+                <div className="p-4 flex flex-col items-center justify-center gap-3">
+                  <h1 className="text-3xl font-semibold text-heading">Analitycs Dashboard</h1>
+                </div>
               </div>
             </div>
           )}
