@@ -77,25 +77,25 @@ export const Card = ({
 
   return (
     <div className="card w-96 bg-base-100 shadow-xl">
-      <figure>
-        {image && (
-          <>
-            <meta property="og:image" content={imageUrl} />
-            <meta name="twitter:image" content={imageUrl} />
-          </>
-        )}
-      </figure>
       <div className="card-body">
         <h2 className="card-title">{title}</h2>
         <p>{description}</p>
-        <div className="card-actions justify-end">
-          <span className={`badge badge-secondary ${isActive ? "bg-green-500" : "bg-red-500"}`}>
-            {isActive ? "Active" : "Deactivated"}
-          </span>
-          <span className="badge badge-secondary">{Number(points)} points</span>
+        <div className="flex flex-row card-actions justify-between">
+          <div className="gap-4 flex flex-row">
+            <span className={`badge badge-secondary ${isActive ? "bg-green-500" : "bg-red-500"}`}>
+              {isActive ? "Active" : "Deactivated"}
+            </span>
+            <span className="badge badge-secondary">{Number(points)} points</span>
+          </div>
+
           {canRedeem && !isBusiness && (
             <button className="btn btn-primary" onClick={() => redeemRewardwithID(rewardId)}>
               {isBusiness ? (isActive ? "Deactivate" : "Activate") : "Redeem"}
+            </button>
+          )}
+          {isBusiness && (
+            <button className="btn btn-primary" onClick={() => editReward(rewardId, isActive)}>
+              {isActive ? "Deactivate" : "Activate"}
             </button>
           )}
         </div>

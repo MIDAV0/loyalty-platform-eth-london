@@ -2,6 +2,23 @@ import { useState } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
+import {
+  ArrowCircleDownIcon,
+  ArrowCircleUpIcon,
+  BellIcon,
+  CalendarIcon,
+  ChartBarSquareIcon,
+  CogIcon,
+  FilterIcon,
+  HomeIcon,
+  LogoutIcon,
+  MenuAlt1Icon,
+  MoonIcon,
+  SearchIcon,
+  TrendingUpIcon,
+  UsersIcon,
+  XIcon,
+} from "@heroicons/react/24/outline";
 import { BSettings } from "~~/components/BSettings";
 import { Card } from "~~/components/Card";
 import { Rewards } from "~~/components/Rewards";
@@ -38,24 +55,53 @@ const Business: NextPage = () => {
     contractBuySomeGetSome,
   } = useLoyaltyContractData({ contractAddress: loyaltyContractAddress });
 
+  const sideBarElement = (
+    <div className="relative z-30 flex h-full flex-col bg-layer-2 shadow">
+      <div className="flex flex-1 flex-col overflow-y-auto">
+        <div className="mt-5 space-y-1 px-1 sm:px-2">
+          <a
+            onClick={() => setShowTab("dashboard")}
+            className={`${
+              showTab === "dashboard" ? "bg-layer-5 text-heading" : "text-text hover:bg-layer-3 hover:text-heading"
+            } group relative flex items-center rounded-xl px-2 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-heading/80`}
+          >
+            <HomeIcon className="mr-3 h-6 w-6 flex-shrink-0" />
+            <span className="flex-1 font-semibold">Dashboard</span>
+          </a>
+          <a
+            onClick={() => setShowTab("rewards")}
+            className={`${
+              showTab === "rewards" ? "bg-layer-3 text-heading" : "text-text hover:bg-layer-3 hover:text-heading"
+            } group relative flex items-center rounded-xl px-2 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-heading/80`}
+          >
+            <UsersIcon className="mr-3 h-6 w-6 flex-shrink-0" />
+            <span className="flex-1 font-semibold">Rewards</span>
+          </a>
+          <a
+            onClick={() => setShowTab("settings")}
+            className={`${
+              showTab === "settings" ? "bg-layer-3 text-heading" : "text-text hover:bg-layer-3 hover:text-heading"
+            } group relative flex items-center rounded-xl px-2 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-heading/80`}
+          >
+            <ChartBarSquareIcon className="mr-3 h-6 w-6 flex-shrink-0" />
+            <span className="flex-1 font-semibold">Settings</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-1/5 p-4 bg-gray-100 flex flex-col gap-5 items-center">
-          <button onClick={() => setShowTab("dashboard")} className="btn btn-primary">
-            Dashboard
-          </button>
-          <button onClick={() => setShowTab("rewards")} className="btn btn-primary">
-            Rewards
-          </button>
-          <button onClick={() => setShowTab("settings")} className="btn btn-primary">
-            Settings
-          </button>
-        </div>
+        <div className="hidden w-64 flex-shrink-0 md:block">{sideBarElement}</div>
 
         {/* Main Content */}
         <div className="w-4/5 p-4">
+          <header className="mt-6 flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+            <h1 className="text-3xl font-semibold text-heading">{showTab === "dashboard" && "Dashboard"}</h1>
+          </header>
           {showTab === "dashboard" && (
             <div className="grid grid-cols-3 grid-rows-2 gap-4">
               {/* Smaller Block 1 */}

@@ -34,14 +34,16 @@ const Customer: NextPage = () => {
             <CustomerDashboard shopData={showShop} deactivateShop={() => setShowShop(undefined)} />
           </>
         ) : (
-          <div className="w-full p-4">
+          <div className="w-full p-6">
             <div className="flex flex-col gap-6">
-              <h1 className="text-center">Explore rewards</h1>
-              <div className="flex gap-8 relative items-center">
+              <div className="p-1">
+                <h1 className="text-center text-3xl font-bold text-gray-900 mb-1">Explore Rewards</h1>
+              </div>
+              <div className="flex gap-28 relative items-center">
                 <div className="flex">Shops {deployedLoyaltyContracts?.length}</div>
                 <input
                   type="text"
-                  className="w-full px-4 py-2 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="w-1/2 px-4 py-2 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                   placeholder="Search..."
                 />
               </div>

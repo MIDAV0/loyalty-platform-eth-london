@@ -291,7 +291,7 @@ export const BSettings = ({
                       <span>NAME</span>
                       <input
                         type="text"
-                        placeholder="Breakfast"
+                        placeholder="My Shop"
                         className="input input-bordered"
                         onChange={e => setTokenName(e.target.value)}
                       />
