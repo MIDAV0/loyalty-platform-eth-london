@@ -87,7 +87,7 @@ export const CustomerDashboard = ({ shopData, deactivateShop = () => {} }: Custo
               </header>
             </div>
           </div>
-          <div>About: </div>
+          <h1 className="text-xl font-semibold text-heading mt-10">Description:</h1>
           <div className="p-4">{shopData?.description}</div>
         </div>
         {/* Bigger Block (List) */}
