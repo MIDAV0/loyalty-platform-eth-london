@@ -73,9 +73,6 @@ export const BSettings = ({
     setIsPayToGetEnabled(false);
     setIsReferralEnabled(false);
     setIsBuySomeGetSomeEnabled(false);
-    setTokenRatio(0);
-    setSpendAmount(0);
-    setRewardAmount(0);
     await writeAsync();
   };
 

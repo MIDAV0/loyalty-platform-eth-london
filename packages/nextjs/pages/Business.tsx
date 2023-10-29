@@ -31,7 +31,7 @@ import useLoyaltyContractData from "~~/hooks/useLoyaltyContractData";
 // For each shop there should be a data for referred people loyalty score
 
 const Business: NextPage = () => {
-  const [showTab, setShowTab] = useState<"dashboard" | "rewards" | "settings">("dashboard");
+  const [showTab, setShowTab] = useState<"dashboard" | "rewards" | "settings">("settings");
 
   const { address } = useAccount();
 
