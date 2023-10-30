@@ -2,7 +2,9 @@
 
 Abstract: The core idea is to digitalize loyalty programs to make them more convenient and sustainable for both businesses and consumers. My platform will provide merchants with quick and easy way to create and customize their loyalty programs. Customers on the other hand will be provided with dashboard where they can view their spending, loyalty points earned, as well as redeem this loyalty points. For example, a coffee shop can set up a program such as for every 1$ spent customer receives a token that is associated with this coffee shop. Customer then can redeem this tokens on the platform to get goods/services.
 
-Created by [Vadzim Mahilny]()
+Created by [Vadzim Mahilny](https://www.linkedin.com/in/vadzim-mahilny/)
+
+[Presentation](https://www.canva.com/design/DAFyqBDy-Sw/GlzFLGKq6cbgrHBwpnJOJA/edit?utm_content=DAFyqBDy-Sw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 Video [demo](https://drive.google.com/file/d/1g5tJsOYd4R0-0TINwypTByCozN1Y8T9T/view?usp=sharing)
 
