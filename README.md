@@ -4,6 +4,8 @@ Abstract: The core idea is to digitalize loyalty programs to make them more conv
 
 Created by [Vadzim Mahilny]()
 
+Video [demo](https://drive.google.com/file/d/1g5tJsOYd4R0-0TINwypTByCozN1Y8T9T/view?usp=sharing)
+
 ⚙️ Built using [Scaffold-ETH 2](https://scaffoldeth.io/)
 
 ⚙️ Contracts deployed on [Flare](https://flare.network/)
