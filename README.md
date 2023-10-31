@@ -4,6 +4,8 @@ Abstract: The core idea is to digitalize loyalty programs to make them more conv
 
 Created by [Vadzim Mahilny](https://www.linkedin.com/in/vadzim-mahilny/)
 
+[Live pitch](https://drive.google.com/file/d/1WFA_-svAwhzqWvVxQ6fx5rB8-jTgRdqE/view?usp=sharing)
+
 [Presentation](https://www.canva.com/design/DAFyqBDy-Sw/GlzFLGKq6cbgrHBwpnJOJA/edit?utm_content=DAFyqBDy-Sw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 Video [demo](https://drive.google.com/file/d/1g5tJsOYd4R0-0TINwypTByCozN1Y8T9T/view?usp=sharing)
