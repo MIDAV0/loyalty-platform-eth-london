@@ -8,8 +8,6 @@ Live Pitch
 
 https://github.com/MIDAV0/loyalty-platform-eth-london/assets/79284856/7d284ed4-31aa-441f-a525-cfa03f52573d
 
-
-
 [Presentation](https://www.canva.com/design/DAFyqBDy-Sw/GlzFLGKq6cbgrHBwpnJOJA/edit?utm_content=DAFyqBDy-Sw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 Video [demo](https://drive.google.com/file/d/1g5tJsOYd4R0-0TINwypTByCozN1Y8T9T/view?usp=sharing)
